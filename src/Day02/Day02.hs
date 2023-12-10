@@ -1,11 +1,18 @@
 module Day02 where
 
 import Text.Parsec
-    ( digit, space, string, many1, sepBy, (<|>), try, parse )
+  ( digit,
+    many1,
+    parse,
+    sepBy,
+    space,
+    string,
+    try,
+    (<|>),
+  )
+import Text.Parsec.Char (digit, space, string)
+import Text.Parsec.Combinator (many1, sepBy)
 import Text.Parsec.String (Parser)
-import Text.Parsec.Char ( digit, space, string )
-import Text.Parsec.Combinator ( many1, sepBy )
-
 
 type GameID = Int
 
@@ -14,18 +21,28 @@ data Cube = Blue | Green | Red deriving (Eq, Show)
 data HandOfCubes = HandOfCubes
   { count :: Int,
     cube :: Cube
-  } deriving (Eq, Show)
+  }
+  deriving (Eq, Show)
+
+data Subset = Subset
+  { blue :: Int,
+    green :: Int,
+    red :: Int
+  }
+  deriving (Eq, Show)
 
 data Game = Game
   { gameID :: GameID,
-    hand :: [HandOfCubes]
-  } deriving (Eq, Show)
+    subsets :: [Subset]
+  }
+  deriving (Eq, Show)
 
 data Configuration = Configuration
-  {  blue :: Int,
-     green :: Int,
-     red :: Int
-  } deriving (Eq, Show)
+  { blueC :: Int,
+    greenC :: Int,
+    redC :: Int
+  }
+  deriving (Eq, Show)
 
 cubeParser :: Parser Cube
 cubeParser =
@@ -35,29 +52,38 @@ cubeParser =
 
 handOfCubesParser :: Parser HandOfCubes
 handOfCubesParser = do
-    count <- read <$> many1 digit
-    space
-    HandOfCubes count <$> cubeParser
+  count <- read <$> many1 digit
+  space
+  HandOfCubes count <$> cubeParser
 
+subsetParser :: Parser Subset
+subsetParser = do
+  hands <- handOfCubesParser `sepBy` string ", "
+  let blue = sum $ map count $ filter (\hand -> Blue == cube hand) hands
+  let green = sum $ map count $ filter (\hand -> Green == cube hand) hands
+  let red = sum $ map count $ filter (\hand -> Red == cube hand) hands
+  return $ Subset blue green red
 
 gameParser :: Parser Game
 gameParser = do
   string "Game "
   gameId <- read <$> many1 digit
   string ": "
-  hands <- handOfCubesParser `sepBy` (try (string "; ") <|> string ", ")
-  return $ Game gameId hands
+  subsets <- subsetParser `sepBy` string "; "
+  return $ Game gameId subsets
 
-countCubes :: Cube -> [HandOfCubes] -> Int
-countCubes targetCube cubes = sum $ map count $ filter (\hand -> targetCube == cube hand) cubes
+
+isSubsetValid :: Subset -> Configuration -> Bool
+isSubsetValid subset config =
+  blue subset <= blueC config
+    && green subset <= greenC config
+    && red subset <= redC config
 
 isGameValid :: Game -> Configuration -> Bool
-isGameValid game config = countCubes Blue (hand game)  <= blue config
-                       && countCubes Green (hand game) <= green config
-                       && countCubes Red (hand game)   <= red config
+isGameValid game config = all (`isSubsetValid` config) (subsets game)
 
 part1 :: String -> Int
-part1 input = sum $ map gameID $ filter (`isGameValid` config ) parsedGames
+part1 input = sum $ map gameID $ filter (`isGameValid` config) parsedGames
   where
-    config = Configuration { blue = 14, green = 13, red = 12}
+    config = Configuration {blueC = 14, greenC = 13, redC = 12}
     parsedGames = map (either (error . show) id . parse gameParser "") (lines input)
