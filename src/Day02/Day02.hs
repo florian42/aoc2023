@@ -41,3 +41,7 @@ gameParser = do
   string ": "
   hands <- handOfCubesParser `sepBy` (try (string "; ") <|> string ", ")
   return $ Game gameId hands
+
+countCubes :: Cube -> [HandOfCubes] -> Int
+countCubes targetCube cubes = sum $ map count $ filter (\hand -> targetCube == cube hand) cubes
+
