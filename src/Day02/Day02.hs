@@ -1,7 +1,7 @@
 module Day02 where
 
 import Text.Parsec
-    ( digit, space, string, many1, sepBy, (<|>), try )
+    ( digit, space, string, many1, sepBy, (<|>), try, parse )
 import Text.Parsec.String (Parser)
 import Text.Parsec.Char ( digit, space, string )
 import Text.Parsec.Combinator ( many1, sepBy )
@@ -55,3 +55,9 @@ isGameValid :: Game -> Configuration -> Bool
 isGameValid game config = countCubes Blue (hand game)  <= blue config
                        && countCubes Green (hand game) <= green config
                        && countCubes Red (hand game)   <= red config
+
+part1 :: String -> Int
+part1 input = sum $ map gameID $ filter (`isGameValid` config ) parsedGames
+  where
+    config = Configuration { blue = 14, green = 13, red = 12}
+    parsedGames = map (either (error . show) id . parse gameParser "") (lines input)

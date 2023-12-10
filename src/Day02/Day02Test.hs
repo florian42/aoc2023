@@ -2,7 +2,7 @@ module Main where
 
 import Data.Char (isDigit)
 import Data.List (findIndex)
-import Day02 (Game (..), HandOfCubes (..), gameParser, Cube (..), countCubes, isGameValid, Configuration (..))
+import Day02 (Game (..), HandOfCubes (..), gameParser, Cube (..), countCubes, isGameValid, Configuration (..), part1)
 import Test.Hspec
 import Text.Parsec (parse)
 
@@ -163,5 +163,7 @@ main = hspec $ do
                         red = 12
                       }
       isGameValid game config `shouldBe` True
-
-
+  inputPart1sample <- runIO $ readFile "src/Day02/day02_sample_input.txt"
+  describe "part1" $ do
+    it "returns expected result on sample" $ do
+      part1 inputPart1sample `shouldBe` 8
