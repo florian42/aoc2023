@@ -15,3 +15,17 @@ test-suite day01-test
   build-depends:       base, hspec, Day01
   other-modules: Day01
   default-language: Haskell2010
+
+library Day02
+  exposed-modules:     Day02
+  hs-source-dirs:      src/Day02
+  build-depends:       base, parsec
+  default-language: Haskell2010
+
+test-suite day02-test
+  hs-source-dirs:      src/Day02
+  main-is:             Day02Test.hs
+  type:                exitcode-stdio-1.0
+  build-depends:       base, hspec, Day02, parsec
+  other-modules: Day02
+  default-language: Haskell2010
