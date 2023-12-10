@@ -2,7 +2,7 @@ module Main where
 
 import Data.Char (isDigit)
 import Data.List (findIndex)
-import Day02 (Game (..), HandOfCubes (..), gameParser, Cube (..), countCubes)
+import Day02 (Game (..), HandOfCubes (..), gameParser, Cube (..), countCubes, isGameValid, Configuration (..))
 import Test.Hspec
 import Text.Parsec (parse)
 
@@ -66,4 +66,102 @@ main = hspec $ do
                       ]
                   }
       countCubes Red (hand game) `shouldBe` 5
+  
+  describe "isGameValid" $ do
+    it "returns true for sample game 1" $ do
+      let game = Game
+                  { gameID = 1,
+                    hand =
+                      [ HandOfCubes {count = 3, cube = Blue},
+                        HandOfCubes {count = 4, cube = Red},
+                        HandOfCubes {count = 1, cube = Red},
+                        HandOfCubes {count = 2, cube = Green},
+                        HandOfCubes {count = 6, cube = Blue},
+                        HandOfCubes {count = 2, cube = Green}
+                      ]
+                  }
+          config = Configuration
+                      { blue = 14,
+                        green = 13,
+                        red = 12
+                      }
+      isGameValid game config `shouldBe` True
+    it "returns true for sample game 2" $ do
+      let game = Game
+                  { gameID = 1,
+                    hand =
+                      [ HandOfCubes {count = 1, cube = Blue},
+                        HandOfCubes {count = 2, cube = Green},
+                        HandOfCubes {count = 3, cube = Green},
+                        HandOfCubes {count = 4, cube = Blue},
+                        HandOfCubes {count = 1, cube = Red},
+                        HandOfCubes {count = 1, cube = Green},
+                        HandOfCubes {count = 1, cube = Blue}
+                      ]
+                  }
+          config = Configuration
+                      { blue = 14,
+                        green = 13,
+                        red = 12
+                      }
+      isGameValid game config `shouldBe` True
+    it "returns false for game 3" $ do
+      let game = Game
+                  { gameID = 1,
+                    hand =
+                      [ HandOfCubes {count = 8, cube = Green},
+                        HandOfCubes {count = 6, cube = Blue},
+                        HandOfCubes {count = 20, cube = Red},
+                        HandOfCubes {count = 5, cube = Blue},
+                        HandOfCubes {count = 4, cube = Red},
+                        HandOfCubes {count = 13, cube = Green},
+                        HandOfCubes {count = 5, cube = Green},
+                        HandOfCubes {count = 1, cube = Red}
+                      ]
+                  }
+          config = Configuration
+                      { blue = 14,
+                        green = 13,
+                        red = 12
+                      }
+      isGameValid game config `shouldBe` False
+    it "returns false for game 4" $ do
+      let game = Game
+                  { gameID = 1,
+                    hand =
+                      [ HandOfCubes {count = 1, cube = Green},
+                        HandOfCubes {count = 3, cube = Red},
+                        HandOfCubes {count = 6, cube = Blue},
+                        HandOfCubes {count = 3, cube = Green},
+                        HandOfCubes {count = 6, cube = Red},
+                        HandOfCubes {count = 3, cube = Green},
+                        HandOfCubes {count = 15, cube = Blue},
+                        HandOfCubes {count = 14, cube = Red}
+                      ]
+                  }
+          config = Configuration
+                      { blue = 14,
+                        green = 13,
+                        red = 12
+                      }
+      isGameValid game config `shouldBe` False
+    it "returns true for game 5" $ do
+      let game = Game
+                  { gameID = 1,
+                    hand =
+                      [ HandOfCubes {count = 6, cube = Red},
+                        HandOfCubes {count = 1, cube = Blue},
+                        HandOfCubes {count = 3, cube = Green},
+                        HandOfCubes {count = 2, cube = Blue},
+                        HandOfCubes {count = 1, cube = Red},
+                        HandOfCubes {count = 2, cube = Green}
+                      ]
+                  }
+          config = Configuration
+                      { blue = 14,
+                        green = 13,
+                        red = 12
+                      }
+      isGameValid game config `shouldBe` True
+
 

@@ -21,6 +21,12 @@ data Game = Game
     hand :: [HandOfCubes]
   } deriving (Eq, Show)
 
+data Configuration = Configuration
+  {  blue :: Int,
+     green :: Int,
+     red :: Int
+  } deriving (Eq, Show)
+
 cubeParser :: Parser Cube
 cubeParser =
   (string "blue" >> return Blue)
@@ -45,3 +51,7 @@ gameParser = do
 countCubes :: Cube -> [HandOfCubes] -> Int
 countCubes targetCube cubes = sum $ map count $ filter (\hand -> targetCube == cube hand) cubes
 
+isGameValid :: Game -> Configuration -> Bool
+isGameValid game config = countCubes Blue (hand game)  <= blue config
+                       && countCubes Green (hand game) <= green config
+                       && countCubes Red (hand game)   <= red config
